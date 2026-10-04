@@ -25,11 +25,12 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
-          DATA_REPOSITORY: YouthOpp/data-pipeline
+          DATA_REPOSITORY: ${{ vars.DATA_REPOSITORY || 'YouthOpp/data-pipeline' }}
         run: |
           mkdir -p data
-          gh release download --repo "$DATA_REPOSITORY" --pattern catalog.json --dir data
+          gh release download catalog-latest --repo "$DATA_REPOSITORY" --pattern catalog.json --dir data
       - name: Refresh public contributor history
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/contributors.mjs
