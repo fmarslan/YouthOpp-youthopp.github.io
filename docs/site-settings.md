@@ -19,3 +19,11 @@ Build-time category and destination pagination limits list pages to 30 records. 
 ## Social and AI discovery
 
 The source-controlled logo and social artwork support branding. PNG social preview, Open Graph, Twitter cards, canonical URLs, sitemap, robots.txt and llms.txt support discoverability. Original publishers remain the authority. These features do not guarantee search rank or AI citation.
+
+## Fork deployment
+
+The operational site is configured for `https://fmarslan.github.io/YouthOpp-youthopp.github.io`. Every internal link and asset receives the project subpath; canonical URLs and the sitemap include it. Contributor history is read from the three fmarslan forks.
+
+The website workflow downloads `catalog.json` from the `catalog-latest` release of `fmarslan/YouthOpp-data-pipeline`. Override the repository using the `DATA_REPOSITORY` repository variable if needed. Merge the pipeline first and complete its collection workflow before publishing the website.
+
+In the website repository's Settings → Pages, select **GitHub Actions** as the build source. The workflow configures and deploys an already enabled Pages site; the standard Actions token cannot enable Pages on a repository where it has not been configured. Production deployment is restricted to the fmarslan website fork's main branch. Pull requests only run tests and a deterministic empty-state documentation build.

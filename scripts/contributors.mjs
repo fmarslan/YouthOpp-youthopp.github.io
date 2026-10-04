@@ -4,7 +4,7 @@ import {tmpdir} from 'node:os';
 import {join, dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
-export const repositories = ['YouthOpp/.github', 'YouthOpp/youthopp.github.io', 'YouthOpp/data-pipeline'];
+export const repositories = ['fmarslan/YouthOpp-.github', 'fmarslan/YouthOpp-youthopp.github.io', 'fmarslan/YouthOpp-data-pipeline'];
 
 export function summarizeCommits(records) {
   const seen = new Set();
@@ -67,7 +67,7 @@ export async function collect(output = 'data/contributors.json') {
     }
     for (const record of records) record.login=mappings.get(record.sha);
     const result={generated_at:new Date().toISOString(),status:errors.length||mappingErrors.length?'partial':'complete',repositories,errors,mapping_errors:mappingErrors,scoring:'One point per attributable non-merge authored commit; bots and explicitly AI-authored automation excluded; unresolved identities not guessed.',...summarizeCommits(records)};
-    if (errors.length===repositories.length) throw new Error('No upstream history could be collected; previous output preserved');
+    if (errors.length===repositories.length) throw new Error('No repository history could be collected; previous output preserved');
     mkdirSync(dirname(output),{recursive:true});
     writeFileSync(output,JSON.stringify(result,null,2)+'\n');
     return result;

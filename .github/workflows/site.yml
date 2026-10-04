@@ -25,7 +25,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
-          DATA_REPOSITORY: ${{ vars.DATA_REPOSITORY || 'YouthOpp/data-pipeline' }}
+          DATA_REPOSITORY: ${{ vars.DATA_REPOSITORY || 'fmarslan/YouthOpp-data-pipeline' }}
         run: |
           mkdir -p data
           gh release download catalog-latest --repo "$DATA_REPOSITORY" --pattern catalog.json --dir data
@@ -43,7 +43,7 @@ jobs:
         with:
           path: dist
   deploy:
-    if: github.repository == 'YouthOpp/youthopp.github.io' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.repository == 'fmarslan/YouthOpp-youthopp.github.io' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -53,6 +53,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
