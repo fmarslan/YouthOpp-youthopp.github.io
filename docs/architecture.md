@@ -34,4 +34,4 @@ Production builds rebuild profiles from the default-branch history of the three 
 
 ## Discovery
 
-Use meaningful HTML headings, canonical URLs, page descriptions, sitemaps, robots directives, OpenGraph/Twitter previews and accurate structured data. The current generator emits WebSite, CollectionPage and WebPage structured data. Organization and BreadcrumbList are future enhancements. Use JobPosting only for real job listings. Optional llms.txt helps discover documentation but does not promise AI search ranking. No marketing claims about scale or institutional support without evidence.
+Use meaningful HTML headings, canonical URLs, page descriptions, sitemaps, robots directives, OpenGraph/Twitter previews and accurate structured data. The current generator emits project Organization, WebSite, CollectionPage/WebPage and route BreadcrumbList structured data without claiming registered charitable status. Use JobPosting only for real job listings. Optional llms.txt helps discover documentation but does not promise AI search ranking. No marketing claims about scale or institutional support without evidence.

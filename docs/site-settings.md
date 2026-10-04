@@ -24,6 +24,10 @@ The source-controlled logo and social artwork support branding. PNG social previ
 
 The operational site is configured for `https://fmarslan.github.io/YouthOpp-youthopp.github.io`. Every internal link and asset receives the project subpath; canonical URLs and the sitemap include it. Contributor history is read from the three fmarslan forks.
 
-The website workflow downloads `catalog.json` from the `catalog-latest` release of `fmarslan/YouthOpp-data-pipeline`. Override the repository using the `DATA_REPOSITORY` repository variable if needed. Merge the pipeline first and complete its collection workflow before publishing the website.
+The website workflow reads the `catalog-latest` manifest from `fmarslan/YouthOpp-data-pipeline`, downloads `catalog.json` from the manifest's immutable versioned release, and verifies its SHA-256 digest and byte size. Override the repository using the `DATA_REPOSITORY` repository variable if needed. Merge the pipeline first and complete its collection workflow before publishing the website.
 
 In the website repository's Settings → Pages, select **GitHub Actions** as the build source. The workflow configures and deploys an already enabled Pages site; the standard Actions token cannot enable Pages on a repository where it has not been configured. Production deployment is restricted to the fmarslan website fork's main branch. Pull requests only run tests and a deterministic empty-state documentation build.
+
+## Hosted URL override
+
+Set the website repository Actions variable `SITE_URL` to the confirmed public base URL, including its project path, to override the checked-in default during builds. Canonical URLs, social images, structured data, sitemap entries, AI discovery links and asset/navigation paths all derive from that value. An account-level GitHub Pages custom domain may redirect a project URL to that domain; confirm the actual deployed endpoint before setting it. Changing this variable does not configure or enable GitHub Pages.
