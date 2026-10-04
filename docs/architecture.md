@@ -1,0 +1,37 @@
+# Architecture
+
+YouthOpp is a nonprofit, community-maintained opportunity index. It lowers the effort of discovering scholarships, internships and related opportunities while directing readers to the original publisher. Publishers remain authoritative for eligibility, funding, deadlines and applications.
+
+## AI-led development
+
+The project idea, development and management use AI agents under human direction. Product, architecture, research, implementation and quality assurance decisions are documented openly. This is also a learning environment where students and recent graduates can build practical AI experience, demonstrate contributions and improve their visibility for scholarships, internships and first jobs. Participation does not guarantee any award or employment. Agents are roles, not separate GitHub identities; public automation is disclosed.
+
+## Free baseline
+
+GitHub repositories hold code and source definitions; Actions runs collection and static builds; release assets publish normalized data; GitHub Pages hosts HTML, CSS and JavaScript. There is no runtime backend, database, mandatory paid API or inference service. Public hosting and automation have quotas and operational limits. The application remains useful without analytics and without browser JavaScript.
+
+## Repository responsibilities
+
+| Repository | Responsibility |
+| --- | --- |
+| data-pipeline | Source registry, adapters, normalization, validation, collection and dataset publication |
+| website | English interface, pre-rendered catalogs, documentation, contributor profiles, search metadata and Pages build |
+| .github | Mission, contribution guidance, community governance and issue templates |
+
+## Delivery flow
+
+A trusted scheduled workflow collects enabled sources. It validates each result and preserves the last successful snapshot when a source fails. A consolidated catalog is published with a generation time and schema version. A website build selects one dataset version, generates category and country pagination plus detail pages, refreshes contributor history and deploys only after validation succeeds.
+
+Render lists in bounded pages rather than downloading the complete catalog into browsers. Country catalogs refer to the opportunity's host country; publisher country and eligible applicant countries remain separate. Unknown metadata must stay unknown. Full-text global search is outside the free baseline; on-page refinement must clearly identify its scope.
+
+## Trust model
+
+Every card provides the original source link, source identity and last successful collection time. A fetched page is not evidence that its application is open. Missing deadlines produce an unconfirmed status; passed deadlines produce expired status. Preserve source language and label it correctly. Never turn an AI inference into an authoritative eligibility condition.
+
+## Contributor visibility
+
+Rebuild profiles from upstream repository history on each website build, with pagination and deduplication by commit and account. Count merged authored commits, excluding automation; show AI-prefixed work separately. Publish the formula, history cutoff and collection time. If history is incomplete or an API fails, disclose that fact. Scores reflect recorded activity, not capability or hiring suitability. Fork copies must not multiply credit.
+
+## Discovery
+
+Use meaningful HTML headings, canonical URLs, page descriptions, sitemaps, robots directives, OpenGraph/Twitter previews and accurate structured data. Include Organization, WebSite, CollectionPage and BreadcrumbList where appropriate. Use JobPosting only for real job listings. Optional llms.txt helps discover documentation but does not promise AI search ranking. No marketing claims about scale or institutional support without evidence.

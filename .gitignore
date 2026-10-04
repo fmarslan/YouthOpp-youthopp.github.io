@@ -17,3 +17,6 @@ Thumbs.db
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+dist/
+data/catalog.json
