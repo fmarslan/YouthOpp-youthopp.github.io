@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {build,escapeHtml,safeUrl,paginate} from '../scripts/build.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {build,escapeHtml,safeUrl,paginate,mergeSourceDirectory} from '../scripts/build.mjs';
 test('source escaping and safe schemes',()=>{assert.equal(escapeHtml('<script>"&'),'&lt;script&gt;&quot;&amp;');assert.equal(safeUrl('javascript:alert(1)'),'#');});
 test('pagination bounds list pages',()=>assert.deepEqual(paginate(Array.from({length:61},(_,i)=>i),30).map(a=>a.length),[30,30,1]));
 test('catalog pages preserve provenance, escape input and leave eligibility unknown',async()=>{const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-'));const input=path.join(dir,'catalog.json');const out=path.join(dir,'site');await fs.writeFile(input,JSON.stringify({schema_version:'1.0',opportunities:Array.from({length:31},(_,i)=>({id:`test-${i}`,title:'Example <script>alert(1)</script>',summary:'Fixture only',category:'scholarships',host_countries:['DE'],eligible_countries:[],source:'fixture',url:'https://example.org/real',language:'de',status:'unknown'})),sources:[{source:'fixture',name:'Fixture Publisher',website_url:'https://example.org'}]}));const result=await build({input,out});assert.equal(result.records,31);assert.ok(result.routes.includes('/countries/de/'));assert.ok(result.routes.includes('/opportunities/scholarships/page/2/'));const html=await fs.readFile(path.join(out,'opportunity/test-0/index.html'),'utf8');assert.ok(html.includes('https://example.org/real'));assert.ok(html.includes('Not provided — check the source'));assert.ok(html.includes('lang="de"'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(!html.includes('<script>alert'));const list=await fs.readFile(path.join(out,'opportunities/index.html'),'utf8');assert.equal((list.match(/class="opportunity"/g)||[]).length,30);assert.ok(list.includes('rel="canonical"'));await fs.rm(dir,{recursive:true,force:true});});
@@ -25,4 +25,41 @@ test('project identity, catalog breadcrumbs and social metadata use the configur
   const docGraph=JSON.parse(doc.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
   assert.equal(docGraph.find(n=>n['@type']==='BreadcrumbList').itemListElement[1].item,'https://example.org/project/docs/');
  }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+test('manual source review never appears as a successful automated collection',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-source-health-'));const input=path.join(dir,'catalog.json');const out=path.join(dir,'site');
+ try{
+  await fs.writeFile(input,JSON.stringify({schema_version:1,opportunities:[],sources:[
+   {source:'manual-fixture',name:'Recent manual candidate',website_url:'https://example.org/manual',status:'not_connected',last_check_at:'2026-10-04T18:00:00Z'},
+   {source:'connected-fixture',name:'Connected source fixture',website_url:'https://example.org/connected',status:'ok',last_success_at:'2026-10-03T18:00:00Z',last_check_at:'2026-10-04T18:00:00Z'}
+  ]}));
+  await build({input,out});
+  const html=await fs.readFile(path.join(out,'sources/index.html'),'utf8');
+  const cards=[...html.matchAll(/<article class="source-card">([\s\S]*?)<\/article>/g)].map(m=>m[1]);
+  const candidate=cards.find(card=>card.includes('<h2>Recent manual candidate</h2>'));
+  assert.ok(candidate.includes('Source status: not_connected · Last collection success: Not provided'));
+  assert.ok(candidate.includes('Last reviewed/checked: 2026-10-04'));
+  assert.ok(!candidate.includes('Last collection success: 2026-10-04'));
+  const connected=cards.find(card=>card.includes('<h2>Connected source fixture</h2>'));
+  assert.ok(connected.includes('Last collection success: 2026-10-03'));
+  assert.ok(connected.includes('Last reviewed/checked: 2026-10-04'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+
+test('source directory merges equivalent publisher homepages without replacing runtime health or distinct pages',()=>{
+ const runtime={source:'opportunitiesforyouth',website_url:'https://OpportunitiesForYouth.org',status:'error',last_success_at:'2026-10-03T18:00:00Z',last_check_at:'2026-10-04T18:00:00Z',error:'Latest fetch failed',adapter:'rss'};
+ const research=[
+  {id:'opportunities-for-youth',url:'https://opportunitiesforyouth.org/',name:'Opportunities for Youth',description:'Reviewed publisher',acquisition_state:'not_connected',status:'candidate',adapter_status:'integration_candidate',last_success_at:'2026-10-04T19:00:00Z',verified_at:'2026-10-04',rights_review_status:'pending'},
+  {id:'same-host-other-programme',url:'https://opportunitiesforyouth.org/programmes/',name:'Separate programme page',acquisition_state:'not_connected'},
+  {id:'invalid-homepage',url:'javascript:alert(1)',name:'Invalid homepage candidate'}
+ ];
+ const {sources,directory}=mergeSourceDirectory([runtime],research);
+ assert.equal(directory.length,3);assert.equal(sources[0].source,'opportunitiesforyouth');assert.equal(sources[0].id,'opportunitiesforyouth');
+ assert.equal(sources[0].name,'Opportunities for Youth');assert.equal(sources[0].description,'Reviewed publisher');assert.equal(sources[0].rights_review_status,'pending');
+ assert.equal(sources[0].status,'error');assert.equal(sources[0].acquisition_state,'error');assert.equal(sources[0].last_success_at,runtime.last_success_at);assert.equal(sources[0].error,'Latest fetch failed');assert.equal(sources[0].adapter_status,undefined);
+ assert.ok(directory.includes(research[1]));assert.ok(directory.includes(research[2]));assert.ok(!directory.includes(research[0]));
+ assert.equal(mergeSourceDirectory([{source:'invalid-runtime',website_url:'javascript:nope'}],research).directory.length,4);
+ const noSuccess=mergeSourceDirectory([{source:'opportunitiesforyouth',website_url:runtime.website_url,status:'ok'}],research).sources[0];assert.equal(noSuccess.last_success_at,null);
 });
