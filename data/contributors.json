@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-10-04T19:18:16.185Z",
+  "status": "complete",
+  "repositories": [
+    "YouthOpp/.github",
+    "YouthOpp/youthopp.github.io",
+    "YouthOpp/data-pipeline"
+  ],
+  "errors": [],
+  "mapping_errors": [],
+  "scoring": "One point per attributable non-merge authored commit; bots and explicitly AI-authored automation excluded; unresolved identities not guessed.",
+  "contributors": [
+    {
+      "login": "ogutdgn",
+      "name": "ogutdgn",
+      "avatar_url": "https://github.com/ogutdgn.png?size=160",
+      "html_url": "https://github.com/ogutdgn",
+      "score": 3,
+      "commits": 3,
+      "repositories": [
+        "YouthOpp/data-pipeline"
+      ]
+    },
+    {
+      "login": "fmarslan",
+      "name": "fmarslan",
+      "avatar_url": "https://github.com/fmarslan.png?size=160",
+      "html_url": "https://github.com/fmarslan",
+      "score": 2,
+      "commits": 2,
+      "repositories": [
+        "YouthOpp/.github"
+      ]
+    },
+    {
+      "login": "Mexatur",
+      "name": "Mexatur",
+      "avatar_url": "https://github.com/Mexatur.png?size=160",
+      "html_url": "https://github.com/Mexatur",
+      "score": 1,
+      "commits": 1,
+      "repositories": [
+        "YouthOpp/youthopp.github.io"
+      ]
+    }
+  ],
+  "unresolved_commits": 2,
+  "excluded_commits": 884,
+  "unique_commits": 892
+}
