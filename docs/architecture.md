@@ -14,9 +14,9 @@ GitHub repositories hold code and source definitions; Actions runs collection an
 
 | Repository | Responsibility |
 | --- | --- |
-| data-pipeline | Source registry, adapters, normalization, validation, collection and dataset publication |
-| website | English interface, pre-rendered catalogs, documentation, contributor profiles, search metadata and Pages build |
-| .github | Mission, contribution guidance, community governance and issue templates |
+| fmarslan/YouthOpp-data-pipeline | Source registry, adapters, normalization, validation, collection and dataset publication |
+| fmarslan/YouthOpp-youthopp.github.io | English interface, pre-rendered catalogs, documentation, contributor profiles, search metadata and Pages build |
+| fmarslan/YouthOpp-.github | Mission, contribution guidance, community governance and issue templates |
 
 ## Delivery flow
 
@@ -30,8 +30,8 @@ Every card provides the original source link, source identity and last successfu
 
 ## Contributor visibility
 
-Rebuild profiles from upstream repository history on each website build, with pagination and deduplication by commit and account. Count merged authored commits, excluding automation; show AI-prefixed work separately. Publish the formula, history cutoff and collection time. If history is incomplete or an API fails, disclose that fact. Scores reflect recorded activity, not capability or hiring suitability. Fork copies must not multiply credit.
+Production builds rebuild profiles from the default-branch history of the three fmarslan forks listed above. Inherited upstream history is preserved; identical commit hashes are counted once across repositories. Author mapping uses paginated GitHub API requests and available public noreply identities. Award one point per attributable authored non-merge commit, excluding bots, automated dataset updates and messages beginning `Open AI agent:`. AI-prefixed work is excluded from scores rather than displayed as a separate ranking. Publish the formula, collection time, unresolved identities and partial-collection warnings. Scores reflect recorded activity, not capability or hiring suitability. PR validation does not collect live contributor history.
 
 ## Discovery
 
-Use meaningful HTML headings, canonical URLs, page descriptions, sitemaps, robots directives, OpenGraph/Twitter previews and accurate structured data. Include Organization, WebSite, CollectionPage and BreadcrumbList where appropriate. Use JobPosting only for real job listings. Optional llms.txt helps discover documentation but does not promise AI search ranking. No marketing claims about scale or institutional support without evidence.
+Use meaningful HTML headings, canonical URLs, page descriptions, sitemaps, robots directives, OpenGraph/Twitter previews and accurate structured data. The current generator emits WebSite, CollectionPage and WebPage structured data. Organization and BreadcrumbList are future enhancements. Use JobPosting only for real job listings. Optional llms.txt helps discover documentation but does not promise AI search ranking. No marketing claims about scale or institutional support without evidence.
