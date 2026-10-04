@@ -26,9 +26,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           DATA_REPOSITORY: ${{ vars.DATA_REPOSITORY || 'fmarslan/YouthOpp-data-pipeline' }}
-        run: |
-          mkdir -p data
-          gh release download catalog-latest --repo "$DATA_REPOSITORY" --pattern catalog.json --dir data
+        run: node scripts/download-catalog.mjs
       - name: Refresh public contributor history
         if: github.event_name != 'pull_request'
         env:
@@ -36,6 +34,7 @@ jobs:
         run: node scripts/contributors.mjs
       - name: Build production catalog
         env:
+          SITE_URL: ${{ vars.SITE_URL }}
           CATALOG_PATH: data/catalog.json
           REQUIRE_CATALOG: ${{ github.event_name == 'pull_request' && '0' || '1' }}
         run: npm run build
