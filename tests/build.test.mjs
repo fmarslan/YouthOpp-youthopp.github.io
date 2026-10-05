@@ -176,3 +176,18 @@ test('canonical record kinds override legacy tags and preserve information-only 
   }
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('production presents pipeline-owned registry and contributors and refuses absent contract',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-producer-contract-'));const input=path.join(dir,'catalog.json');const contributorsInput=path.join(dir,'contributors.json');const out=path.join(dir,'site');
+ const catalog={schema_version:1,opportunities:[],sources:[],source_registry:[{id:'release-only',name:'Release registry publisher',url:'https://example.org/release',acquisition_state:'not_connected'}]};
+ const contributorData={generated_at:'2026-10-05T07:00:00Z',status:'partial',mapping_errors:[{error:'Fixture mapping warning'}],unresolved_commits:2,contributors:[{login:'fixture-person',name:'Release contributor',score:4,commits:4}]};
+ try{
+  await fs.writeFile(input,JSON.stringify(catalog));
+  await assert.rejects(()=>build({input,out,requireCatalog:true}),/pipeline contributor snapshot is required/);
+  await fs.writeFile(contributorsInput,JSON.stringify(contributorData));await build({input,out,requireCatalog:true});
+  const html=await fs.readFile(path.join(out,'contributors/index.html'),'utf8');assert.ok(html.includes('Release contributor'));assert.ok(html.includes('4 contribution points'));assert.ok(html.includes('Collection status: partial'));assert.ok(html.includes('Unresolved identities: 2'));
+  const sources=await fs.readFile(path.join(out,'sources/index.html'),'utf8');assert.ok(sources.includes('Release registry publisher'));
+  await fs.writeFile(input,JSON.stringify({...catalog,source_registry:undefined}));await assert.rejects(()=>build({input,out,requireCatalog:true}),/pipeline source registry is required/);
+  await fs.writeFile(input,JSON.stringify(catalog));await fs.writeFile(contributorsInput,JSON.stringify({...contributorData,contributors:[{login:'bad',score:'4',commits:4}]}));await assert.rejects(()=>build({input,out,requireCatalog:true}),/Invalid pipeline contributor record/);
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
