@@ -136,3 +136,43 @@ test('runtime publisher merges every equivalent research alias while retaining d
  const result=mergeSourceDirectory([{source:'adapter',website_url:'https://example.org/',status:'ok'}],[{id:'review',name:'Reviewed publisher',url:'https://example.org/'},{id:'adapter',url:'https://example.org/'},{id:'programme',name:'Distinct programme',url:'https://example.org/programme'}]);
  assert.equal(result.directory.length,2);assert.equal(result.sources[0].name,'Reviewed publisher');assert.equal(result.sources[0].acquisition_state,'ok');assert.equal(result.directory[1].id,'programme');
 });
+
+
+test('canonical record kinds override legacy tags and preserve information-only application actions',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-canonical-kind-'));const input=path.join(dir,'catalog.json');const out=path.join(dir,'site');
+ try{
+  const base={summary:'',category:'scholarships',host_countries:[],eligible_countries:[],source:'fixture',url:'https://example.org/information',status:'unknown'};
+  await fs.writeFile(input,JSON.stringify({schema_version:1,model_version:2,sources:[],opportunities:[
+   {...base,id:'programme-kind',title:'Programme kind only',kind:'programme-overview',tags:[]},
+   {...base,id:'institutional-kind',title:'Institutional kind only',kind:'institutional-grant',category:'grants',tags:[]},
+   {...base,id:'programme-conflict',title:'Programme wins conflicting tag',kind:'programme-overview',tags:['institutional-grant']},
+   {...base,id:'institutional-conflict',title:'Institutional wins conflicting tag',kind:'institutional-grant',category:'grants',tags:['programme-overview']},
+   {...base,id:'opportunity-conflict',title:'Opportunity wins conflicting tags',kind:'opportunity',tags:['programme-overview','institutional-grant']},
+   {...base,id:'unknown-conflict',title:'Unknown wins conflicting tags',kind:'unknown',tags:['programme-overview','institutional-grant']}
+  ]}));
+  await build({input,out});
+  const listing=await fs.readFile(path.join(out,'opportunities/index.html'),'utf8');
+  for(const [id,label,action,description] of [
+   ['programme-kind','Programme overview','View programme information ↗','Programme information. Confirm current application calls and dates with the publisher.'],
+   ['programme-conflict','Programme overview','View programme information ↗','Programme information. Confirm current application calls and dates with the publisher.'],
+   ['institutional-kind','Institutional grant','View institutional grant details ↗','Funding for institutions or organisations. Confirm eligible applicants and current calls with the publisher.'],
+   ['institutional-conflict','Institutional grant','View institutional grant details ↗','Funding for institutions or organisations. Confirm eligible applicants and current calls with the publisher.']
+  ]){
+   const row=(listing.match(/<tr class="opportunity"[^>]*>[\s\S]*?<\/tr>/g)||[]).find(row=>row.includes('/opportunity/'+id+'/"'));
+   assert.ok(row?.includes('<span class="tag">'+label+'</span>'),id+' listing kind');
+   const html=await fs.readFile(path.join(out,'opportunity',id,'index.html'),'utf8');
+   assert.ok(html.includes('<span class="tag">'+label+'</span>'),id+' detail kind');
+   assert.ok(html.includes(action),id+' information action');
+   assert.ok(!html.includes('Read the original &amp; apply'),id+' never implies an application');
+   assert.ok(!html.includes('<span class="tag">'+(label==='Programme overview'?'Institutional grant':'Programme overview')+'</span>'),id+' ignores conflicting tag');
+   for(const meta of ['<meta name="description"','<meta property="og:description"','<meta name="twitter:description"'])assert.ok(html.includes(meta+' content="'+description+'">'),id+' metadata description');
+  }
+  for(const id of ['opportunity-conflict','unknown-conflict']){
+   const html=await fs.readFile(path.join(out,'opportunity',id,'index.html'),'utf8');
+   assert.ok(html.includes('Read the original &amp; apply ↗'),id+' ordinary discovery action');
+   assert.ok(!html.includes('Programme overview'));assert.ok(!html.includes('Institutional grant'));
+   const row=(listing.match(/<tr class="opportunity"[^>]*>[\s\S]*?<\/tr>/g)||[]).find(row=>row.includes('/opportunity/'+id+'/"'));
+   assert.ok(row);assert.ok(!row.includes('Programme overview'));assert.ok(!row.includes('Institutional grant'));
+  }
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
