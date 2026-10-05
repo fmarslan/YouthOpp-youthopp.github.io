@@ -27,11 +27,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATA_REPOSITORY: ${{ vars.DATA_REPOSITORY || 'fmarslan/YouthOpp-data-pipeline' }}
         run: node scripts/download-catalog.mjs
-      - name: Refresh public contributor history
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/contributors.mjs
       - name: Build production catalog
         env:
           SITE_URL: ${{ vars.SITE_URL }}

@@ -24,4 +24,4 @@ Do not collect applicant profiles or sensitive application information. Public c
 
 ## Delivery boundaries
 
-Work is performed in cloud development environments. Task branches retain granular commits; the agreed owner-fork delivery is a single commit per repository. PRs describe changes and validation with AI attribution. The owner has authorised merging reviewed delivery PRs into the fmarslan fork main branches. No YouthOpp upstream PR is part of the current scope. Automated reminders are recovery aids, not a guarantee of uninterrupted execution.
+Work is performed in cloud development environments. Task branches retain granular commits; the agreed owner-fork delivery is a single commit per repository. PRs describe changes and validation with AI attribution. The owner has authorised merging reviewed delivery PRs into the authorised operational main branches. No YouthOpp upstream PR is part of the current scope. Automated reminders are recovery aids, not a guarantee of uninterrupted execution.

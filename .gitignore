@@ -20,3 +20,4 @@ Thumbs.db
 
 dist/
 data/catalog.json
+data/contributors.json

@@ -2,7 +2,7 @@
 
 ## Build and deploy
 
-Run `npm test` and `npm run build` with Node.js 22. Set `CATALOG_PATH` to the published JSON catalog; output is `dist/`. Production uses `REQUIRE_CATALOG=1` to reject missing data. Never publish test fixtures.
+Run `npm test` and `npm run build` with Node.js 22. Set `CATALOG_PATH` to the published JSON catalog; output is `dist/`. Contributor data defaults to `contributors.json` beside `CATALOG_PATH`, or set `CONTRIBUTORS_PATH` explicitly. Production uses `REQUIRE_CATALOG=1` to reject missing catalog, registry or contributor data. Never publish test fixtures.
 
 ## Search verification
 
@@ -22,11 +22,11 @@ The source-controlled logo and social artwork support branding. PNG social previ
 
 ## Fork deployment
 
-The operational site is configured for `https://fmarslan.github.io/YouthOpp-youthopp.github.io`. Every internal link and asset receives the project subpath; canonical URLs and the sitemap include it. Contributor history is read from the three fmarslan forks.
+The operational site URL is defined by `site.config.json` and deployment settings. Every internal link and asset receives the project subpath; canonical URLs and the sitemap include it. Contributor history is collected by the pipeline; the website displays the published snapshot.
 
-The website workflow reads the `catalog-latest` manifest from `fmarslan/YouthOpp-data-pipeline`, downloads `catalog.json` from the manifest's immutable versioned release, and verifies its SHA-256 digest and byte size. Override the repository using the `DATA_REPOSITORY` repository variable if needed. Merge the pipeline first and complete its collection workflow before publishing the website.
+The website workflow reads the `catalog-latest` manifest from the configured operational data repository for `YouthOpp/data-pipeline`, downloads `catalog.json` and `contributors.json` from the manifest's same immutable versioned release, and verifies both assets’ SHA-256 digests and byte sizes. Override the repository using the `DATA_REPOSITORY` repository variable if needed. Merge the pipeline first and complete its collection workflow before publishing the website.
 
-In the website repository's Settings → Pages, select **GitHub Actions** as the build source. The workflow configures and deploys an already enabled Pages site; the standard Actions token cannot enable Pages on a repository where it has not been configured. Production deployment is restricted to the fmarslan website fork's main branch. Pull requests only run tests and a deterministic empty-state documentation build.
+In the website repository's Settings → Pages, select **GitHub Actions** as the build source. The workflow configures and deploys an already enabled Pages site; the standard Actions token cannot enable Pages on a repository where it has not been configured. Production deployment is restricted to the configured deployment repository's main branch. Pull requests only run tests and a deterministic empty-state documentation build.
 
 ## Hosted URL override
 

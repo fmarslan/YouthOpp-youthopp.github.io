@@ -14,13 +14,13 @@ GitHub repositories hold code and source definitions; Actions runs collection an
 
 | Repository | Responsibility |
 | --- | --- |
-| fmarslan/YouthOpp-data-pipeline | Source registry, adapters, normalization, validation, collection and dataset publication |
-| fmarslan/YouthOpp-youthopp.github.io | English interface, pre-rendered catalogs, documentation, contributor profiles, search metadata and Pages build |
-| fmarslan/YouthOpp-.github | Mission, contribution guidance, community governance and issue templates |
+| [YouthOpp/data-pipeline](https://github.com/YouthOpp/data-pipeline) | Source registry, adapters, normalization, validation, collection, contributor history and dataset publication |
+| [YouthOpp/youthopp.github.io](https://github.com/YouthOpp/youthopp.github.io) | English interface, pre-rendered catalogs, documentation, contributor profiles, search metadata and Pages build |
+| [YouthOpp/.github](https://github.com/YouthOpp/.github) | Mission, contribution guidance, community governance and issue templates |
 
 ## Delivery flow
 
-A trusted scheduled workflow collects enabled sources. It validates each result and preserves the last successful snapshot when a source fails. A consolidated catalog is published with a generation time and schema version. A website build selects one dataset version, generates category and country pagination plus detail pages, refreshes contributor history and deploys only after validation succeeds.
+A trusted scheduled workflow collects enabled sources. It validates each result and preserves the last successful snapshot when a source fails. A consolidated catalog is published with a generation time and schema version. A website build selects one dataset version, generates category and country pagination plus detail pages, presents the pipeline-provided contributor snapshot and deploys only after validation succeeds.
 
 Render lists in bounded pages rather than downloading the complete catalog into browsers. Country catalogs refer to the opportunity's host country; publisher country and eligible applicant countries remain separate. Unknown metadata must stay unknown. Full-text global search is outside the free baseline; on-page refinement must clearly identify its scope.
 
@@ -30,8 +30,10 @@ Every card provides the original source link, source identity and last successfu
 
 ## Contributor visibility
 
-Production builds rebuild profiles from the default-branch history of the three fmarslan forks listed above. Inherited upstream history is preserved; identical commit hashes are counted once across repositories. Author mapping uses paginated GitHub API requests and available public noreply identities. Award one point per attributable authored non-merge commit, excluding bots, automated dataset updates and messages beginning `Open AI agent:`. AI-prefixed work is excluded from scores rather than displayed as a separate ranking. Publish the formula, collection time, unresolved identities and partial-collection warnings. Scores reflect recorded activity, not capability or hiring suitability. PR validation does not collect live contributor history.
+The pipeline rebuilds profiles from the default-branch history of the configured operational repository histories. Inherited upstream history is preserved; identical commit hashes are counted once across repositories. Author mapping uses paginated GitHub API requests and available public noreply identities. Award one point per attributable authored non-merge commit, excluding bots, automated dataset updates and messages beginning `Open AI agent:`. AI-prefixed work is excluded from scores rather than displayed as a separate ranking. Publish the formula, collection time, unresolved identities and partial-collection warnings. Scores reflect recorded activity, not capability or hiring suitability. The website only consumes the integrity-verified contributor snapshot from the same immutable pipeline release as the catalog; neither production website builds nor PR validation collect history.
 
 ## Discovery
 
 Use meaningful HTML headings, canonical URLs, page descriptions, sitemaps, robots directives, OpenGraph/Twitter previews and accurate structured data. The current generator emits project Organization, WebSite, CollectionPage/WebPage and route BreadcrumbList structured data without claiming registered charitable status. Use JobPosting only for real job listings. Optional llms.txt helps discover documentation but does not promise AI search ranking. No marketing claims about scale or institutional support without evidence.
+
+These names and links identify the original project repositories. Runtime configuration continues to use authorised operational copies for collection, contributor history and deployment; the canonical project identity does not imply deployment or workflow execution in the original repositories.

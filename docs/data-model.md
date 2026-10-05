@@ -4,7 +4,7 @@ YouthOpp is a directory of independent publisher sources: records point to publi
 
 ## One taxonomy, distinct dimensions
 
-`scripts/taxonomy.js` is authoritative and exports the same contract as `catalog.taxonomy`. Category identifiers and their order match the website: scholarships, internships, volunteering, fellowships, training, competitions, grants, jobs, other. Record `categories` contains unique memberships; the first is the backwards-compatible `category`. RSS rules inspect publisher tags only, in that fixed order. Multiple matching tags create multiple memberships; unmatched tags become `other` with unknown classification. Source capabilities never classify all its records automatically.
+The pipeline’s `scripts/taxonomy.js` is authoritative and exports the same contract as `catalog.taxonomy`. Category identifiers and their order match the website: scholarships, internships, volunteering, fellowships, training, competitions, grants, jobs, other. Record `categories` contains unique memberships; the first is the backwards-compatible `category`. RSS rules inspect publisher tags only, in that fixed order. Multiple matching tags create multiple memberships; unmatched tags become `other` with unknown classification. Source capabilities never classify all its records automatically.
 
 Record `kind` is separate: opportunity, programme-overview, institutional-grant, unknown. Generic feeds remain unknown; only explicit reviewed evidence establishes the other kinds. The reviewed adapter publishes programme metadata, not a promise of an active call. Language and original titles stay unchanged.
 
@@ -22,7 +22,7 @@ Source `content_types` map explicitly to the same category vocabulary. Research,
 
 Canonical records exist once in `catalog.opportunities`. `catalog.indexes.categories`, `record_kinds` and `sources` contain record IDs only. `source_categories` and `publisher_countries` contain registry IDs only. Empty category/kind lists remain present. Disabled adapters retain registry documentation but have no collected record index. Membership indexes are validated for exact completeness, stable ordering, uniqueness, source joins and absence of dangling references.
 
-The catalog keeps `schema_version: 1` for existing website readers and adds `model_version: 2`. The new taxonomy, registry and indexes are embedded inside `catalog.json`, covered by the existing SHA256 manifest and immutable release tag. No duplicate dataset files or unverified auxiliary release assets are introduced. `schemas/opportunity.schema.json` describes additive record fields; runtime validation cross-checks its enum against the authoritative contract.
+The catalog keeps `schema_version: 1` for existing website readers and adds `model_version: 2`. The new taxonomy, registry and indexes are embedded inside `catalog.json`, covered by the existing SHA256 manifest and immutable release tag. No duplicate opportunity dataset files are introduced. Contributor history is a distinct `contributors.json` release asset with its own SHA256/byte-size entry in the same immutable manifest; it is never bundled in the website repository. `schemas/opportunity.schema.json` describes additive record fields; runtime validation cross-checks its enum against the authoritative contract.
 
 ## Adding a source or data type
 
