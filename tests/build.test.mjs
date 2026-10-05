@@ -63,3 +63,33 @@ test('source directory merges equivalent publisher homepages without replacing r
  assert.equal(mergeSourceDirectory([{source:'invalid-runtime',website_url:'javascript:nope'}],research).directory.length,4);
  const noSuccess=mergeSourceDirectory([{source:'opportunitiesforyouth',website_url:runtime.website_url,status:'ok'}],research).sources[0];assert.equal(noSuccess.last_success_at,null);
 });
+
+
+test('programme and institutional records show accurate kind notices on catalog cards and detail pages',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-record-kind-'));const input=path.join(dir,'catalog.json');const out=path.join(dir,'site');
+ try{
+  const base={summary:'',host_countries:[],eligible_countries:[],source:'fixture',url:'https://example.org/information',language:'cs',status:'unknown',deadline:null};
+  await fs.writeFile(input,JSON.stringify({schema_version:1,sources:[],opportunities:[
+   {...base,id:'programme',title:'Programme fixture',category:'scholarships',tags:['programme-overview']},
+   {...base,id:'institutional',title:'Institutional fixture',category:'grants',tags:['institutional-grant']},
+   {...base,id:'regular',title:'Regular fixture',summary:'Original listing summary',category:'scholarships',tags:[]}
+  ]}));
+  await build({input,out});const catalog=await fs.readFile(path.join(out,'opportunities/index.html'),'utf8');
+  assert.ok(catalog.includes('<span class="tag">Programme overview</span>'));assert.ok(catalog.includes('<span class="tag">Institutional grant</span>'));
+  assert.ok(catalog.includes('Confirm current application calls and dates with the publisher.'));
+  assert.ok(catalog.includes('Funding for institutions or organisations.'));
+  const programme=await fs.readFile(path.join(out,'opportunity/programme/index.html'),'utf8');
+  const institutional=await fs.readFile(path.join(out,'opportunity/institutional/index.html'),'utf8');
+  const regular=await fs.readFile(path.join(out,'opportunity/regular/index.html'),'utf8');
+  assert.ok(programme.includes('<span class="tag">Programme overview</span>'));assert.ok(programme.includes('View programme information ↗'));
+  assert.ok(institutional.includes('<span class="tag">Institutional grant</span>'));assert.ok(institutional.includes('View institutional grant details ↗'));
+  for(const [html,description] of [[programme,'Programme information. Confirm current application calls and dates with the publisher.'],[institutional,'Funding for institutions or organisations. Confirm eligible applicants and current calls with the publisher.']]){
+   assert.ok(html.includes(`<meta name="description" content="${description}">`));
+   assert.ok(html.includes(`<meta property="og:description" content="${description}">`));
+   assert.ok(html.includes(`<meta name="twitter:description" content="${description}">`));
+   const graph=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
+   assert.equal(graph.find(node=>node['@type']==='WebPage').description,description);
+  }
+  assert.ok(regular.includes('Read the original &amp; apply ↗'));assert.ok(!regular.includes('Programme overview'));assert.ok(!regular.includes('Institutional grant'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});

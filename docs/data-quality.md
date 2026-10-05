@@ -8,6 +8,12 @@ The implemented RSS adapter retains the item title, original URL, feed URL, publ
 
 The RSS adapter currently leaves deadline, location, destination countries and eligible countries unknown. It does not extract or guess these from titles. Therefore missing country catalogs or unknown deadlines reflect real metadata gaps rather than universal eligibility. Training, competition and grant categories may require richer reviewed adapters before reliable classification.
 
+## Reviewed programme metadata
+
+The Czech Fulbright source uses a separate `reviewed-rss` adapter with two precisely reviewed original URLs. It publishes only original Czech title, link and publication date; descriptions and images are excluded. One item is a programme-cycle overview, the other is an institution-restricted travel grant. Catalog cards and detail pages identify these distinctions; neither record establishes an open application call or unrestricted youth eligibility. Descriptions used for search and social metadata explain these limits in the project's own words.
+
+These records retain unknown deadlines, availability, destination and eligible countries. Newly observed items remain excluded until reviewed and added to the exact allowlist. The Netherlands and Portugal Fulbright feeds remain disabled because their inspected entries did not provide qualifying calls; further programme-page adapters require separate source and technical review.
+
 ## Validation and identity
 
 Records require stable IDs, original URLs, source identifiers and observation timestamps. Validation rejects unsafe URL schemes, embedded credentials, invalid dates, malformed country codes, unsupported categories, duplicate IDs within an adapter batch and non-plain or oversized summaries. IDs derive from the source and item URL. Different publishers mentioning the same programme may still have separate records; cross-publisher semantic deduplication is not implemented.
