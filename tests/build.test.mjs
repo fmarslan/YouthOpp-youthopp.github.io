@@ -93,3 +93,16 @@ test('programme and institutional records show accurate kind notices on catalog 
   assert.ok(regular.includes('Read the original &amp; apply ↗'));assert.ok(!regular.includes('Programme overview'));assert.ok(!regular.includes('Institutional grant'));
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('additive v1 taxonomy supplies category labels without removing existing routes',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-taxonomy-'));const input=path.join(dir,'catalog.json');
+ try {
+  await fs.writeFile(input,JSON.stringify({schema_version:1,opportunities:[],sources:[],taxonomy:{categories:[{id:'internships',label:'Work placements'},{id:'scholarships',label:'Study funding'}]}}));
+  const result=await build({input,out:path.join(dir,'out')});
+  assert.ok(result.routes.includes('/opportunities/jobs/'));
+  const home=await fs.readFile(path.join(dir,'out/index.html'),'utf8');
+  assert.ok(home.includes('Work placements'));
+  assert.ok(home.indexOf('Work placements')<home.indexOf('Study funding'));
+  assert.ok(home.includes('Search and country filter apply to the latest listings'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
