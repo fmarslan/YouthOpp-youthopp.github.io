@@ -71,7 +71,10 @@ const kindDefinitions={
  'programme-overview':{label:'Programme overview',note:'Programme information. Confirm current application calls and dates with the publisher.',action:'View programme information ↗'},
  'institutional-grant':{label:'Institutional grant',note:'Funding for institutions or organisations. Confirm eligible applicants and current calls with the publisher.',action:'View institutional grant details ↗'}
 };
-const recordKinds=r=>(Array.isArray(r.tags)?r.tags:[]).filter(tag=>Object.hasOwn(kindDefinitions,tag)).map(tag=>kindDefinitions[tag]);
+const recordKinds=r=>{
+ const kinds=['opportunity','programme-overview','institutional-grant','unknown'].includes(r.kind)?[r.kind]:(Array.isArray(r.tags)?r.tags:[]);
+ return kinds.filter(kind=>Object.hasOwn(kindDefinitions,kind)).map(kind=>kindDefinitions[kind]);
+};
 const kindNotice=r=>recordKinds(r).map(kind=>`<p class="small"><span class="tag">${e(kind.label)}</span> ${e(kind.note)}</p>`).join('');
 const detailAction=r=>recordKinds(r)[0]?.action||'Read the original & apply ↗';
 const detailDescription=r=>r.summary.trim()||recordKinds(r)[0]?.note||'Original-source opportunity information. Confirm dates, eligibility and application details with the publisher.';
