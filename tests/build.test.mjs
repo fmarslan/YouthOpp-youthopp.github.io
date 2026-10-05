@@ -106,3 +106,33 @@ test('additive v1 taxonomy supplies category labels without removing existing ro
   assert.ok(home.includes('Search and country filter apply to the latest listings'));
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('embedded source registry is authoritative and keeps runtime health separate',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-embedded-sources-'));const input=path.join(dir,'catalog.json');
+ try {
+  await fs.writeFile(input,JSON.stringify({schema_version:1,opportunities:[],sources:[{source:'adapter-one',name:'Runtime publisher',website_url:'https://example.org/',status:'error',last_success_at:null,error:'Collection failed'}],source_registry:[{id:'review-one',adapter_source_id:'adapter-one',name:'Research publisher',url:'https://example.org/',publisher_country:'DE',categories:['internships'],verified_at:'2026-10-05',acquisition_state:'not_connected',rights_review_status:'pending'}]}));
+  await build({input,out:path.join(dir,'out')});
+  const html=await fs.readFile(path.join(dir,'out/sources/index.html'),'utf8');
+  assert.equal((html.match(/<article class="source-card">/g)||[]).length,1);
+  assert.ok(html.includes('Source status: error · Last collection success: Not provided'));
+  assert.ok(html.includes('Germany'));assert.ok(html.includes('Content: Internships'));
+  assert.ok(!html.includes('grants.at'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+test('multi-category records appear once in every relevant category and country listing',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-multi-category-'));const input=path.join(dir,'catalog.json');
+ try{
+  await fs.writeFile(input,JSON.stringify({schema_version:1,sources:[],opportunities:[{id:'multi-record',title:'Combined opportunity',summary:'Discovery record',url:'https://example.org/programme',category:'scholarships',categories:['scholarships','training','training'],host_countries:['DE'],eligible_countries:[],status:'unknown'}]}));
+  const result=await build({input,out:path.join(dir,'out')});assert.equal(result.records,1);
+  for(const route of ['opportunities/scholarships','opportunities/training','opportunities/training/de']){
+   const html=await fs.readFile(path.join(dir,'out',route,'index.html'),'utf8');assert.equal((html.match(/class="opportunity"/g)||[]).length,1);
+  }
+  const unrelated=await fs.readFile(path.join(dir,'out/opportunities/jobs/index.html'),'utf8');assert.ok(!unrelated.includes('Combined opportunity'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+test('runtime publisher merges every equivalent research alias while retaining distinct pages',()=>{
+ const result=mergeSourceDirectory([{source:'adapter',website_url:'https://example.org/',status:'ok'}],[{id:'review',name:'Reviewed publisher',url:'https://example.org/'},{id:'adapter',url:'https://example.org/'},{id:'programme',name:'Distinct programme',url:'https://example.org/programme'}]);
+ assert.equal(result.directory.length,2);assert.equal(result.sources[0].name,'Reviewed publisher');assert.equal(result.sources[0].acquisition_state,'ok');assert.equal(result.directory[1].id,'programme');
+});
