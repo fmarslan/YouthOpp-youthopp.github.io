@@ -36,6 +36,8 @@ Each source has a safe slug, name, homepage, retrieval endpoint, adapter type, l
 
 ## Adapter responsibilities
 
+See the [Community adapter implementation guide](/docs/pipeline-adapters/) for manifest fields, trusted dispatch, commands and reviewed programme selection.
+
 A common RSS/Atom adapter handles configuration-only sources. A custom adapter transforms fetched source content into normalized candidates. The pipeline owns stable IDs, timestamps, common validation, persistence and publication. Fixture tests exercise typical and malformed content without hitting live services. Implementation function names must match the actual exported API; this contract describes responsibilities rather than requiring a specific signature.
 
 Collection uses bounded response sizes, timeouts, restricted public endpoints and polite request frequency. Retry transient errors with a bounded budget. Source errors are isolated. Never overwrite good state with empty data caused by parse/network failures; successful empty responses require an explicit documented policy. Missing an item from a feed is not proof that the opportunity expired.
