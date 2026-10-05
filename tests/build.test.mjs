@@ -191,3 +191,17 @@ test('production presents pipeline-owned registry and contributors and refuses a
   await fs.writeFile(input,JSON.stringify(catalog));await fs.writeFile(contributorsInput,JSON.stringify({...contributorData,contributors:[{login:'bad',score:'4',commits:4}]}));await assert.rejects(()=>build({input,out,requireCatalog:true}),/Invalid pipeline contributor record/);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('publisher attribution is escaped wherever source titles appear without inventing missing notices',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-attribution-'));const input=path.join(dir,'catalog.json');const out=path.join(dir,'site');
+ const base={title:'Programme fixture',summary:'',category:'scholarships',host_countries:[],eligible_countries:[],url:'https://example.org/programme',language:'en',status:'unknown'};
+ try{
+  await fs.writeFile(input,JSON.stringify({schema_version:1,source_registry:[],sources:[{source:'credited',name:'OeAD',website_url:'https://example.org/credited',attribution:'© OeAD <script>alert(1)</script>'},{source:'ordinary',name:'Ordinary publisher',website_url:'https://example.org/ordinary'}],opportunities:[{...base,id:'credited-record',source:'credited'},{...base,id:'ordinary-record',source:'ordinary'}]}));
+  await build({input,out});const sources=await fs.readFile(path.join(out,'sources/index.html'),'utf8');const detail=await fs.readFile(path.join(out,'opportunity/credited-record/index.html'),'utf8');
+  const listingRoutes=['index.html','opportunities/index.html','opportunities/scholarships/index.html','countries/unknown/index.html','opportunities/scholarships/unknown/index.html'];
+  const listings=await Promise.all(listingRoutes.map(route=>fs.readFile(path.join(out,route),'utf8')));
+  for(const html of [sources,detail,...listings]){assert.ok(html.includes('Source attribution: © OeAD &lt;script&gt;alert(1)&lt;/script&gt;'));assert.ok(!html.includes('<script>alert(1)</script>'));}
+  for(const html of listings){const ordinaryRow=(html.match(/<tr class="opportunity"[^>]*>[\s\S]*?<\/tr>/g)||[]).find(row=>row.includes('/opportunity/ordinary-record/'));assert.ok(ordinaryRow);assert.ok(!ordinaryRow.includes('source-attribution'));}
+  const ordinary=await fs.readFile(path.join(out,'opportunity/ordinary-record/index.html'),'utf8');assert.ok(!ordinary.includes('source-attribution'));assert.equal((sources.match(/class="small source-attribution"/g)||[]).length,1);
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
