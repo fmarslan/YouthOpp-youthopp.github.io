@@ -169,7 +169,8 @@ test('canonical record kinds override legacy tags and preserve information-only 
   }
   for(const id of ['opportunity-conflict','unknown-conflict']){
    const html=await fs.readFile(path.join(out,'opportunity',id,'index.html'),'utf8');
-   assert.ok(html.includes('Read the original &amp; apply ↗'),id+' ordinary discovery action');
+   assert.ok(html.includes(id==='unknown-conflict'?'Visit the original source ↗':'Read the original &amp; apply ↗'),id+' accurate discovery action');
+   if(id==='unknown-conflict'){assert.ok(html.includes('Indexed source page'));assert.ok(!html.includes('Read the original &amp; apply'));}
    assert.ok(!html.includes('Programme overview'));assert.ok(!html.includes('Institutional grant'));
    const row=(listing.match(/<tr class="opportunity"[^>]*>[\s\S]*?<\/tr>/g)||[]).find(row=>row.includes('/opportunity/'+id+'/"'));
    assert.ok(row);assert.ok(!row.includes('Programme overview'));assert.ok(!row.includes('Institutional grant'));
@@ -230,5 +231,20 @@ test('source removal guidance is routed from every footer and the documentation 
   assert.ok(removal.includes('Do not include personal, confidential or sensitive information'));
   const privacy=await fs.readFile(path.join(dir,'docs/privacy/index.html'),'utf8');
   assert.ok(privacy.includes('href="/project/docs/source-removal/"'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+ test('central settings drive shared branding and canonical discovery on every route',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-settings-'));const out=path.join(dir,'site');
+ try{
+  const result=await build({out,config:{title:'Shared <brand>',tagline:'Shared tagline',brandCaption:'Shared caption',mission:'Shared mission',repositoryUrl:'https://github.com/example/project',googleAnalyticsId:'G-EXAMPLE123',googleVerification:'google-token',bingVerification:'bing-token'}});
+  for(const route of result.routes){const html=await fs.readFile(path.join(out,route,'index.html'),'utf8');
+   assert.ok(html.includes('content="https://youthopps.org'+route+'"'));
+   assert.ok(html.includes('<span>Shared &lt;brand&gt;</span>'));assert.ok(html.includes('Shared tagline'));assert.ok(html.includes('Shared caption'));assert.ok(html.includes('Shared mission'));
+   assert.ok(html.includes('href="https://github.com/example/project"'));assert.ok(html.includes('data-id="G-EXAMPLE123"'));
+   assert.ok(html.includes('name="google-site-verification" content="google-token"'));assert.ok(html.includes('name="msvalidate.01" content="bing-token"'));
+   const graph=JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);assert.equal(graph['@graph'][0].name,'Shared <brand>');assert.equal(graph['@graph'][1].name,'Shared <brand>');
+  }
+  for(const file of ['robots.txt','sitemap.xml','llms.txt']){const text=await fs.readFile(path.join(out,file),'utf8');assert.ok(text.includes('https://youthopps.org'));assert.ok(!text.includes('fmarslan.github.io'));}
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
