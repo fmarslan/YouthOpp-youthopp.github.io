@@ -205,3 +205,30 @@ test('publisher attribution is escaped wherever source titles appear without inv
   const ordinary=await fs.readFile(path.join(out,'opportunity/ordinary-record/index.html'),'utf8');assert.ok(!ordinary.includes('source-attribution'));assert.equal((sources.match(/class="small source-attribution"/g)||[]).length,1);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('source removal guidance is routed from every footer and the documentation index',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'youthopp-source-removal-'));
+ try{
+  const result=await build({out:dir,config:{url:'https://example.org/project/'}});
+  assert.ok(result.routes.includes('/docs/source-removal/'));
+  const footerText='To request removal of a source or indexed link, open an issue or submit a pull request.';
+  for(const route of ['index.html','sources/index.html','docs/privacy/index.html','docs/source-removal/index.html']){
+   const html=await fs.readFile(path.join(dir,route),'utf8');
+   assert.ok(html.includes(`<a href="/project/docs/source-removal/">${footerText}</a>`),route);
+   assert.equal((html.match(new RegExp(footerText.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'))||[]).length,1,route);
+   assert.ok(html.includes('independent search index of factual titles and links'),route);
+   assert.ok(html.includes('Indexing does not imply publisher endorsement'),route);
+  }
+  const docs=await fs.readFile(path.join(dir,'docs/index.html'),'utf8');
+  assert.ok(docs.includes('href="/project/docs/source-removal/"'));
+  assert.ok(docs.includes('<h2>Source removal requests</h2>'));
+  const removal=await fs.readFile(path.join(dir,'docs/source-removal/index.html'),'utf8');
+  assert.ok(removal.includes('href="https://github.com/YouthOpp/data-pipeline/issues/new"'));
+  assert.ok(removal.includes('href="https://github.com/YouthOpp/data-pipeline/pulls"'));
+  assert.ok(removal.includes('<code>data/sources/sources.json</code>'));
+  assert.ok(removal.includes('<code>enabled: false</code>'));
+  assert.ok(removal.includes('Do not include personal, confidential or sensitive information'));
+  const privacy=await fs.readFile(path.join(dir,'docs/privacy/index.html'),'utf8');
+  assert.ok(privacy.includes('href="/project/docs/source-removal/"'));
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
