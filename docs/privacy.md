@@ -8,7 +8,9 @@ Every record credits and links to its source. Titles preserve source language, w
 
 ## Analytics
 
-Analytics are disabled by default. Enabling a tracker requires documenting its service, collection, retention and applicable consent before publication.
+Optional Google Analytics 4 is configured for this site. The Google tag is loaded only after the visitor selects Allow analytics; Decline leaves it unloaded. Analytics measures page visits and browser/device information to help improve the index. We do not send application details, names or email addresses in our tracking code. Google processes analytics data under its own [privacy policy](https://policies.google.com/privacy).
+
+Your choice is stored in this browser under `youthopp-analytics`. Clear this site's browser storage to reset the choice; declining afterward prevents future tag loading. The GA4 account owner controls retention and access in Google Analytics; the repository does not establish or claim a specific account retention period. For privacy questions, contact maintainers through the [project issue tracker](https://github.com/YouthOpp/youthopp.github.io/issues), without publishing personal information.
 
 ## Public contributions
 
