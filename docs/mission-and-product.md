@@ -2,13 +2,13 @@
 
 ## Users and purpose
 
-Young people, university students and recent graduates should discover relevant opportunities without repeatedly visiting fragmented publishers. YouthOpp presents compact summaries and original links. It also supports practical AI learning and visible open-source contributions.
+Young people, university students and recent graduates should discover relevant opportunities without repeatedly visiting fragmented publishers. YouthOpp presents factual titles and original links. It also supports practical AI learning and visible open-source contributions.
 
 ## Experience
 
-The site and project documents are English. Source titles and summaries may retain their original language with language metadata. Opportunity categories and destination-country catalogs are prebuilt, paginated static pages. Large datasets are not loaded into every browser.
+The site and project documents are English. Source titles may retain their original language with language metadata. Opportunity categories and destination-country catalogs are prebuilt, paginated static pages. Large datasets are not loaded into every browser.
 
-Show title, publisher, original link, available summary, category, known dates and last-check information. Separate source country, destination country and eligible countries. Unknown information is never presented as a confirmed condition. Expired deadlines and stale sources are visibly handled.
+Show title, publisher, original link, category, known dates and last-check information. Separate source country, destination country and eligible countries. Unknown information is never presented as a confirmed condition. Expired deadlines and stale sources are visibly handled.
 
 The site has a detailed About area, source directory, public Docs, contributor profiles and contribution instructions. No sign-in or applicant data collection is needed for core discovery.
 

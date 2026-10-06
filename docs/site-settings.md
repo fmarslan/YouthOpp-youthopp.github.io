@@ -1,33 +1,33 @@
 # Website settings and operations
 
-## Build and deploy
+## Central settings and shared templates
+
+The production address is https://youthopps.org. Edit `site.config.json` for the canonical URL, title, description, brand caption, tagline, mission, original repository link, logo/social artwork paths, navigation and footer links. The shared page template in `scripts/build.mjs` renders the header, footer, metadata and structured data for every route. Catalog rows and pagination also use shared renderers. Do not copy headers, footers or verification tags into individual pages.
+
+Production Actions uses the checked-in configuration. An old repository variable `SITE_URL` no longer overrides it. A `SITE_URL` environment override remains available for deliberate local preview builds; it does not configure DNS or GitHub Pages. Project repository identities remain the original YouthOpp URLs; download and deploy configuration uses the authorised working forks.
+
+## Domain and deployment
+
+In the operational website repository Settings → Pages, choose **GitHub Actions** as the Source and enter `youthopps.org` as the Custom domain. Configure the domain's DNS for GitHub Pages, Then set apex A records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153` and `185.199.111.153`. If using www, set its CNAME to `fmarslan.github.io` without a repository path. Wait for the DNS check and certificate, then enable Enforce HTTPS. See the [GitHub custom-domain guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site). A custom Actions deployment does not use a CNAME file to configure the domain. Confirm the public URL and ensure a subsequent main push does not launch a competing Jekyll publisher before closing hosted QA.
 
 Run `npm test` and `npm run build` with Node.js 22. Set `CATALOG_PATH` to the published JSON catalog; output is `dist/`. Contributor data defaults to `contributors.json` beside `CATALOG_PATH`, or set `CONTRIBUTORS_PATH` explicitly. Production uses `REQUIRE_CATALOG=1` to reject missing catalog, registry or contributor data. Never publish test fixtures.
 
-## Search verification
+The workflow reads the `catalog-latest` manifest from the configured operational data repository, retrieves catalog and contributor assets from the same immutable release, and verifies digests and byte sizes. `DATA_REPOSITORY` can override the working data repository. Production deploys only the configured working website repository's main branch. Pull requests run tests and an empty-state documentation build.
 
-Configure the canonical URL and Google Search Console or Bing verification tokens in `site.config.json`. Submit the generated sitemap to verified webmaster accounts. Neither registration nor metadata guarantees ranking.
+## Analytics: the exact field
 
-## Analytics
+Create a Google Analytics 4 web data stream for https://youthopps.org. In `site.config.json`, set `googleAnalyticsId` to its Measurement ID, for example `G-XXXXXXXXXX`. Enter only the ID, not a script snippet or API secret. Leave it empty to disable analytics. The shared template includes `assets/analytics.js` only for a valid ID. That script loads Google tracking only after the visitor selects Allow analytics; Decline keeps tracking off. Update `docs/privacy.md` to reflect the actual analytics account, purpose and contact before enabling it. Do not paste analytics into individual pages.
 
-Tracking is off by default. Optional Google analytics is loaded only after an explicit visitor choice when an identifier is configured. Update the privacy policy before enabling tracking.
+## SEO: the exact fields and owner actions
+
+- `url`: https://youthopps.org; used by canonical URLs, structured data, social URLs, robots.txt, sitemap.xml and llms.txt.
+- `title` and `description`: English site name and concise mission/search description. Individual pages receive their own titles and descriptions from the shared renderer and validated pipeline records.
+- `googleVerification`: optional Google Search Console HTML meta-tag content token, not the whole tag. This verifies a URL-prefix property. A Domain property instead requires a DNS TXT record; that token belongs in DNS.
+- `bingVerification`: optional Bing Webmaster Tools meta-tag content token, not the whole tag.
+- `socialImagePath` and `logoPath`: checked-in artwork paths; replace the corresponding asset files when updating visuals. Social-image alt text derives from the central title and tagline.
+
+After the domain works publicly, verify Search Console and Bing and submit https://youthopps.org/sitemap.xml. Sitemap, robots, canonical tags, Open Graph, Twitter cards and Organization/WebSite/breadcrumb structured data are generated automatically. No keyword list or repeated tracking/SEO snippet is needed. Metadata and registration do not guarantee ranking. Keep original publisher attribution and unknown eligibility/application status accurate.
 
 ## Static scalability
 
-Build-time category and destination pagination limits list pages to 30 records. Links work without JavaScript; no complete catalog is downloaded to the browser. Unknown status does not establish that applications remain open.
-
-## Social and AI discovery
-
-The source-controlled logo and social artwork support branding. PNG social preview, Open Graph, Twitter cards, canonical URLs, sitemap, robots.txt and llms.txt support discoverability. Original publishers remain the authority. These features do not guarantee search rank or AI citation.
-
-## Fork deployment
-
-The operational site URL is defined by `site.config.json` and deployment settings. Every internal link and asset receives the project subpath; canonical URLs and the sitemap include it. Contributor history is collected by the pipeline; the website displays the published snapshot.
-
-The website workflow reads the `catalog-latest` manifest from the configured operational data repository for `YouthOpp/data-pipeline`, downloads `catalog.json` and `contributors.json` from the manifest's same immutable versioned release, and verifies both assets’ SHA-256 digests and byte sizes. Override the repository using the `DATA_REPOSITORY` repository variable if needed. Merge the pipeline first and complete its collection workflow before publishing the website.
-
-In the website repository's Settings → Pages, select **GitHub Actions** as the build source. The workflow configures and deploys an already enabled Pages site; the standard Actions token cannot enable Pages on a repository where it has not been configured. Production deployment is restricted to the configured deployment repository's main branch. Pull requests only run tests and a deterministic empty-state documentation build.
-
-## Hosted URL override
-
-Set the website repository Actions variable `SITE_URL` to the confirmed public base URL, including its project path, to override the checked-in default during builds. Canonical URLs, social images, structured data, sitemap entries, AI discovery links and asset/navigation paths all derive from that value. An account-level GitHub Pages custom domain may redirect a project URL to that domain; confirm the actual deployed endpoint before setting it. Changing this variable does not configure or enable GitHub Pages.
+Build-time category and destination pagination limits list pages to the configured `pageSize` (30 by default). Links work without JavaScript; no complete catalog is downloaded into every browser. Unknown status does not establish that applications remain open.

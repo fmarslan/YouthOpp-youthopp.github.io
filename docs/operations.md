@@ -62,3 +62,7 @@ The added Netherlands record retains only the original doctoral programme title 
 This producer stage does not establish website consumption of the 37-record release or hosted functional acceptance. The next main website build must log this immutable release or a newer integrity-checked release; deployed catalog and source-health pages need separate acceptance. The earlier 36-record producer/consumer evidence remains a dated historical baseline.
 
 Repository names in these documents identify the original YouthOpp project. Dated run IDs and release tags above are evidence from authorised operational copies, not claims that those runs occurred in the original repositories. Deployment and acquisition repository settings retain their configured operational values.
+
+## Intended public domain (2026-10-06)
+
+The owner selected https://youthopps.org. Current shared templates and discovery metadata derive from `site.config.json`. Earlier run/deployment evidence remains dated evidence, not acceptance of this new endpoint. GitHub Pages must use GitHub Actions with the custom domain configured separately, followed by DNS/HTTPS and actual public HTTP/browser checks. Hosted QA remains open until public acceptance and no competing publisher on a subsequent main push. See [Website settings](/docs/site-settings/) for configuration.

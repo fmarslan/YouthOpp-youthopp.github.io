@@ -1,6 +1,6 @@
 # YouthOpp website
 
-An English-language static opportunity catalog for nonprofit public benefit. Source summaries preserve original language. Built using AI agents under human maintainer direction.
+An English-language static opportunity catalog for nonprofit public benefit. Source titles preserve original language. Built using AI agents under human maintainer direction.
 
 ## Run
 
@@ -17,3 +17,5 @@ Output: `dist/`. Without catalog data development builds show an honest empty st
 Configure `site.config.json` for canonical domain, webmaster verification and optional consent-gated analytics. Documentation in `docs/*.md` is published at `/docs/`. Build-time pagination keeps catalog data out of browser downloads.
 
 Original project repositories: [YouthOpp/youthopp.github.io](https://github.com/YouthOpp/youthopp.github.io), [YouthOpp/data-pipeline](https://github.com/YouthOpp/data-pipeline), and [YouthOpp/.github](https://github.com/YouthOpp/.github). Deployment settings use the authorised operational repository copies.
+
+Production address: https://youthopps.org. Configure branding, canonical metadata, analytics and verification centrally in `site.config.json`; see [Website settings](docs/site-settings.md) for the exact fields and domain setup.

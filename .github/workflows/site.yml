@@ -31,7 +31,6 @@ jobs:
         run: node scripts/download-catalog.mjs
       - name: Build production catalog
         env:
-          SITE_URL: ${{ vars.SITE_URL }}
           CATALOG_PATH: data/catalog.json
           REQUIRE_CATALOG: ${{ github.event_name == 'pull_request' && '0' || '1' }}
         run: npm run build
